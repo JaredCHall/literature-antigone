@@ -1,0 +1,187 @@
+:root {
+    --bg: #17140f;
+    --bg-alt: #1c1812;
+    --ink: #e9e2d3;
+    --ink-dim: #a89e8c;
+
+    --rule: rgba(201, 162, 75, 0.25);
+
+    --antigone: #b14450;
+    --antigone-gold: #c9a24b;
+
+    --creon: #9c7a45;
+    --creon-dim: #beb3a0;
+
+    --neutral: #8f8678;
+
+    --font-display: "Cormorant Garamond", serif;
+    --font-body: "Cormorant Garamond", serif;
+    --font-label: "Inter", sans-serif;
+
+    --measure: 42rem;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* ---------- Title block ---------- */
+
+.title-block {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 5rem 1.5rem 3rem;
+    text-align: center;
+}
+
+.work-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-style: italic;
+    font-size: clamp(2.75rem, 6vw, 4rem);
+    letter-spacing: 0.02em;
+    margin: 0 0 0.75rem;
+    color: var(--ink);
+}
+
+.author {
+    font-family: var(--font-label);
+    font-size: 0.95rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--antigone-gold);
+    margin: 0 0 0.4rem;
+}
+
+.translator {
+    font-family: var(--font-label);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    margin: 0 0 2.5rem;
+}
+
+.title-block::after {
+    content: "";
+    display: block;
+    width: 4rem;
+    height: 1px;
+    margin: 0 auto;
+    background: var(--rule);
+}
+
+/* ---------- Quotations ---------- */
+
+.quotations {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 1rem 1.5rem 6rem;
+}
+
+.quote {
+    padding: 2.75rem 0;
+    border-bottom: 1px solid var(--rule);
+}
+
+.quote:last-child {
+    border-bottom: none;
+}
+
+.speaker {
+    font-family: var(--font-label);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin: 0 0 0.9rem;
+}
+
+.speaker--antigone {
+    color: var(--antigone);
+}
+
+.speaker--creon {
+    color: var(--creon);
+}
+
+.speaker--neutral {
+    color: var(--neutral);
+}
+
+.line {
+    font-size: 1.35rem;
+    line-height: 1.65;
+    font-weight: 400;
+    margin: 0;
+    color: var(--ink);
+    white-space: pre-line;
+}
+
+/* ---------- Exchanges (stichomythia) ---------- */
+
+.quote--exchange {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.exchange-line {
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 1rem;
+    align-items: baseline;
+}
+
+.speaker-inline {
+    font-family: var(--font-label);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: pre-line;
+}
+
+.line-inline {
+    font-size: 1.25rem;
+    line-height: 1.55;
+    color: var(--ink);
+    white-space: pre-line;
+}
+
+/* ---------- Footer ---------- */
+
+.page-footer {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    text-align: center;
+}
+
+.page-footer p {
+    font-family: var(--font-label);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+    opacity: 0.6;
+    margin: 0;
+}
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 40rem) {
+    .exchange-line {
+        grid-template-columns: 1fr;
+        gap: 0.15rem;
+    }
+
+    .title-block {
+        padding-top: 3.5rem;
+    }
+}
