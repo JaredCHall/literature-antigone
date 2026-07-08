@@ -34,6 +34,80 @@ body {
     text-rendering: optimizeLegibility;
 }
 
+/* ============================================================
+   SCENE / BACKGROUND LAYERS
+   ============================================================ */
+
+.scene-layer {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 2.5s ease-in-out;
+}
+
+.scene-layer.hidden {
+    opacity: 0;
+}
+
+.scene-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 1;
+    pointer-events: none;
+    background: rgba(23, 20, 15, 0.55);
+}
+
+#gallery-toggle {
+    position: fixed;
+    bottom: 32px;
+    right: 36px;
+    z-index: 10;
+    background: rgba(23, 20, 15, 0.55);
+    border: 1px solid rgba(201, 162, 75, 0.28);
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+    color: var(--creon-dim);
+    font-size: 1.2rem;
+    line-height: 1;
+    user-select: none;
+}
+
+body:hover #gallery-toggle {
+    opacity: 1;
+}
+
+#gallery-toggle:hover {
+    background: rgba(23, 20, 15, 0.85);
+    color: var(--antigone-gold);
+    border-color: rgba(201, 162, 75, 0.55);
+}
+
+/* ---------- Content wrapper / gallery mode ---------- */
+
+.content {
+    position: relative;
+    z-index: 2;
+    transition: opacity 1s ease-in-out;
+}
+
+body.gallery-mode .content {
+    opacity: 0;
+    pointer-events: none;
+}
+
 /* ---------- Title block ---------- */
 
 .title-block {
