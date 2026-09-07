@@ -162,6 +162,7 @@ body.gallery-mode .content {
 }
 
 .quote {
+    margin: 0;
     padding: 2.75rem 0;
     border-bottom: 1px solid var(--rule);
 }
