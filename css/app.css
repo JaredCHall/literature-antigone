@@ -15,7 +15,6 @@
     --neutral: #8f8678;
 
     --font-display: "Cormorant Garamond", serif;
-    --font-body: "Cormorant Garamond", serif;
     --font-label: "Inter", sans-serif;
 
     --measure: 42rem;
@@ -29,7 +28,7 @@ body {
     margin: 0;
     background: var(--bg);
     color: var(--ink);
-    font-family: var(--font-body);
+    font-family: var(--font-display);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
 }
