@@ -2,7 +2,7 @@
  * Renders scenes with crossfade.
  *
  * Sets timeout to ensure fade is not interrupted before it completes.
- * Allows replacing the next pending fade with subsequent calls to crossfadeTo().
+ * Allows replacing the next pending fade with subsequent calls to fadeTo().
  */
 class ScenePainter {
 
@@ -32,10 +32,11 @@ class ScenePainter {
         this.#loader = imageLoader;
     }
 
-    // Paints the first scene immediately
-    paintFirst(src){
+    // Paints scene immediately
+    cutTo(src){
+        this.#clearPending();
         this.#activeLayer.replaceChildren(this.#loader.loadImage(src));
-        this.#lastSwap = performance.now() - this.fadeDuration;
+        this.#lastSwap = Math.max(this.#lastSwap, performance.now() - this.fadeDuration);
         this.#current = src;
         this.#wanted = src;
     }
@@ -43,7 +44,7 @@ class ScenePainter {
     // Schedules the next crossfade. If an image is already fading in,
     // it waits until the fade completes, before changing the scene.
     // Subsequent calls always replace the currently pending next scene.
-    paintNext(src){
+    fadeTo(src){
         if(src === this.#wanted){ return; }   // already painted, loading, or scheduled
         this.#wanted = src;
         this.#clearPending();                  // any queued fade is now stale
@@ -58,11 +59,11 @@ class ScenePainter {
 
     #schedule(src){
         const ms = this.#msUntilFree();
-        if(ms <= 0){ return this.#crossfadeTo(src); }
-        this.#nextFadeTimer = setTimeout(() => this.#crossfadeTo(src), ms);
+        if(ms <= 0){ return this.#swapLayers(src); }
+        this.#nextFadeTimer = setTimeout(() => this.#swapLayers(src), ms);
     }
 
-    #crossfadeTo(src){
+    #swapLayers(src){
         this.#inactiveLayer.replaceChildren(this.#loader.loadImage(src));
         this.#activeLayer.classList.add('hidden');
         this.#inactiveLayer.classList.remove('hidden');

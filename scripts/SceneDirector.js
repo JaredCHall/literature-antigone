@@ -36,7 +36,7 @@ class SceneDirector {
         this.sceneMap.measure()
         const [index, imgPath] = this.#currentSceneAndPath();
         this.imageLoader.preloadAll(index).then()
-        this.scenePainter.paintFirst(imgPath)
+        this.scenePainter.cutTo(imgPath)
         this.#candidate = imgPath;
 
         // set events
@@ -52,7 +52,11 @@ class SceneDirector {
         if (this.doc.fonts && this.doc.fonts.ready) {
             this.doc.fonts.ready.then(() => {
                 this.sceneMap.measure();
-                this.#onScroll()
+                const path = this.#currentScenePath();
+                if (path === this.#candidate) { return; }   // reflow didn't change the scene
+                clearTimeout(this.#settleTimer);
+                this.#candidate = path;
+                this.scenePainter.cutTo(path);
             });
         }
     }
@@ -63,7 +67,7 @@ class SceneDirector {
         if (path === this.#candidate) { return; }   // same scene: let the clock run
         this.#candidate = path;
         clearTimeout(this.#settleTimer);
-        this.#settleTimer = setTimeout(() => this.scenePainter.paintNext(path), this.#settleMs);
+        this.#settleTimer = setTimeout(() => this.scenePainter.fadeTo(path), this.#settleMs);
     }
 
     #onScroll() {

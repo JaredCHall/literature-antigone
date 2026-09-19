@@ -49,8 +49,9 @@ class SceneMap {
     }
 
     measure(){
-        const top = this.view.scrollY;
-        this.offsets = this.anchors.map((a) => a.el.getBoundingClientRect().top + top);
+        const tops = this.anchors.map((a) => a.el.getBoundingClientRect().top); // forces layout
+        const scroll = this.view.scrollY;  // now settled
+        this.offsets = tops.map((t) => t + scroll);
     }
 
     sceneForScroll(){
