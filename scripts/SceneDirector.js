@@ -14,11 +14,17 @@ class SceneDirector {
     #isFrameLoading; // bool, true when scroll animation frame is loading
     #activationRatio; // ratio of screen height from top of viewport that anchor must reach to display scene
 
-    constructor(document, imagePaths, activationRatio = 0.35) {
+    #settleMs;       // ms a scene must hold before it's painted
+    #candidate;      // scene path currently waiting out the settle
+    #settleTimer;
+
+    constructor(document, imagePaths, activationRatio = 0.35, settleMs= 500) {
         this.doc = document;
         this.view = this.doc.defaultView;
         this.imagePaths = imagePaths;
+
         this.#activationRatio = activationRatio;
+        this.#settleMs = settleMs;
     }
 
     start() {
@@ -26,20 +32,18 @@ class SceneDirector {
         this.sceneMap = new SceneMap(this.doc, this.imagePaths.length, this.#activationRatio)
         this.scenePainter = new ScenePainter(this.doc, this.imageLoader);
 
-
-
         // paint the first scene
         this.sceneMap.measure()
         const [index, imgPath] = this.#currentSceneAndPath();
         this.imageLoader.preloadAll(index).then()
         this.scenePainter.paintFirst(imgPath)
+        this.#candidate = imgPath;
 
         // set events
         this.view.addEventListener('resize', () => {
             this.sceneMap.measure();
             this.#onScroll()
         })
-
         this.view.addEventListener('scroll', () => {
             this.#onScroll()
         })
@@ -51,12 +55,15 @@ class SceneDirector {
                 this.#onScroll()
             });
         }
-
     }
 
     update() {
         this.#isFrameLoading = false;
-        this.scenePainter.paintNext(this.#currentScenePath());
+        const path = this.#currentScenePath();
+        if (path === this.#candidate) { return; }   // same scene: let the clock run
+        this.#candidate = path;
+        clearTimeout(this.#settleTimer);
+        this.#settleTimer = setTimeout(() => this.scenePainter.paintNext(path), this.#settleMs);
     }
 
     #onScroll() {
