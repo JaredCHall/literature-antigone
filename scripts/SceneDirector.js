@@ -39,7 +39,7 @@ export class SceneDirector {
     start() {
         this.sceneMap = new SceneMap(this.doc, this.#activationRatio)
         this.imageLoader = new ImageLoader(this.sceneMap.paths);
-        this.scenePainter = new ScenePainter(this.doc, this.imageLoader);
+        this.scenePainter = new ScenePainter(this.doc, (src) => this.imageLoader.load(src));
 
         // paint the first scene
         this.sceneMap.measure();
