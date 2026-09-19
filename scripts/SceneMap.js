@@ -4,7 +4,7 @@
  * Scene anchors are `.quote` elements inside `.quotations` carrying a
  * `data-scene` attribute. No anchors at all, throws.
  */
-class SceneMap {
+export class SceneMap {
 
     anchors = [];   // anchor elements in document order
     offsets = [];   // document-top offsets, parallel to anchors

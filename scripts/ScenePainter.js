@@ -10,8 +10,10 @@
  * Requires both layers in the DOM, an opacity transition on them
  * (its duration sets the fade length), and a .hidden class that sets
  * opacity: 0.
+ *
+ * @typedef {import('./ImageLoader.js').ImageLoader} ImageLoader
  */
-class ScenePainter {
+export class ScenePainter {
 
     fadeDuration; // duration of crossfade in milliseconds
 
@@ -25,7 +27,10 @@ class ScenePainter {
     #lastSwapMs = 0;    // ms time the last crossfade began
     #nextFadeTimer;             // timer for next fade after current load
 
-
+    /**
+     * @param {Document} document
+     * @param {ImageLoader} imageLoader source of decoded scene images
+     */
     constructor(document, imageLoader) {
         this.#activeLayer =  document.getElementById('scene-a');
         if(!this.#activeLayer){ throw new Error('No element #scene-a found. Cannot paint scenes.') }

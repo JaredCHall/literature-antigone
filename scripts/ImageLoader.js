@@ -12,7 +12,7 @@
  * nearest first, one at a time, so the scenes a reader will reach next
  * are decoded first.
  */
-class ImageLoader {
+export class ImageLoader {
 
     paths = [];
     loads = new Map;

@@ -1,3 +1,5 @@
+import {SceneDirector} from "./SceneDirector.js";
+
 /**
  * Initializes the gallery mode toggle which activates when
  * GUI icon clicked or letter 'G' is pressed on keyboard.

@@ -1,11 +1,14 @@
 
+import { ImageLoader } from './ImageLoader.js';
+import { SceneMap } from './SceneMap.js';
+import { ScenePainter } from './ScenePainter.js';
 /**
  * Displays the correct scene for user scroll position.
  *
  * On scroll / resize, a scene must hold for settleMs before it's painted,
  * so fast scrolling doesn't crossfade through every scene it passes.
  */
-class SceneDirector {
+export class SceneDirector {
     doc;        // document global
     view;       // window global
 
