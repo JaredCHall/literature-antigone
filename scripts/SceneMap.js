@@ -1,11 +1,14 @@
 /**
- * Finds 'sceneN-start' anchors, tracks offsets, and determines correct scene for current viewport scroll position
+ * Maps scroll position to scene.
  *
- * SceneDirector is expected to call .measure() and .sceneForScroll()
+ * Scene anchors are `.quote` elements inside `.quotations` carrying a
+ * `sceneN-start` class. N is 1-based and maps to image index N−1.
+ * Anchors with no matching image are skipped with a warning; a duplicate
+ * anchor, or no anchors at all, throws.
  */
 class SceneMap {
 
-    anchors = []; // {index, el} in document order — index is the scene number
+    anchors = []; // {index, el} in document order — index is the image index (scene number − 1)
     offsets = []; // document-top offsets, parallel to anchors
 
     doc = null;
@@ -48,12 +51,28 @@ class SceneMap {
         }
     }
 
+    /**
+     * Records each anchor's offset from the top of the document.
+     *
+     * Call before the first sceneForScroll(), and again whenever layout
+     * may have moved the anchors (resize, webfont load). Rects are read
+     * before scrollY because the layout they force can move the scroll
+     * position, e.g. when the browser restores it on reload.
+     */
     measure(){
-        const tops = this.anchors.map((a) => a.el.getBoundingClientRect().top); // forces layout
-        const scroll = this.view.scrollY;  // now settled
+        const tops = this.anchors.map((a) => a.el.getBoundingClientRect().top);
+        const scroll = this.view.scrollY;
         this.offsets = tops.map((t) => t + scroll);
     }
 
+    /**
+     * Returns the image index of the scene for the current scroll position.
+     *
+     * Above the first anchor (the title block), this returns the first anchor's scene.
+     * At the bottom of the page, it returns the last anchor's scene,
+     * even if that anchor never reaches the activation line.
+     * Uses offsets from the last measure(); throws if never measured.
+     */
     sceneForScroll(){
         if(this.offsets.length !== this.anchors.length){
             throw Error('Anchors and offsets have different lengths. Must call .measure() before .sceneForScroll()');
@@ -74,6 +93,6 @@ class SceneMap {
     }
 
     #validateActivationRatio(n){
-        return Number.isFinite(n) &&  n >= 0 && n <= 1
+        return Number.isFinite(n) &&  n >= 0 && n <= 1;
     }
 }
