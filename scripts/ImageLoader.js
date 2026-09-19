@@ -18,8 +18,8 @@ class ImageLoader {
     loads = new Map;
 
     constructor(paths) {
-        this.paths = paths || [];
-        if(!this.paths.length) { throw Error('No images provided in paths array') }
+        this.paths = [...new Set(paths ?? [])]; // One entry per image, even if several passages share it.
+        if (!this.paths.length) { throw new Error('No images provided in paths array'); }
     }
 
     /** Returns the Image for src, starting load if needed. */

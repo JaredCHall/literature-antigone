@@ -8,7 +8,6 @@
 class SceneDirector {
     doc;        // document global
     view;       // window global
-    imagePaths; // array of scene image paths
 
     imageLoader;    // ImageLoader
     sceneMap;       // SceneMap
@@ -21,10 +20,9 @@ class SceneDirector {
     #candidate;      // scene path currently waiting out the settle
     #settleTimer;
 
-    constructor(document, imagePaths, activationRatio = 0.35, settleMs= 500) {
+    constructor(document, activationRatio = 0.35, settleMs= 500) {
         this.doc = document;
         this.view = this.doc.defaultView;
-        this.imagePaths = imagePaths;
 
         this.#activationRatio = activationRatio;
         this.#settleMs = settleMs;
@@ -36,19 +34,19 @@ class SceneDirector {
      * Handles page reflow on webfonts load.
      */
     start() {
-        this.imageLoader = new ImageLoader(this.imagePaths);
-        this.sceneMap = new SceneMap(this.doc, this.imagePaths.length, this.#activationRatio)
+        this.sceneMap = new SceneMap(this.doc, this.#activationRatio)
+        this.imageLoader = new ImageLoader(this.sceneMap.paths);
         this.scenePainter = new ScenePainter(this.doc, this.imageLoader);
 
         // paint the first scene
         this.sceneMap.measure();
-        const imgPath = this.#currentScenePath();
-        this.scenePainter.cutTo(imgPath);
-        this.#candidate = imgPath;
+        const src = this.sceneMap.sceneForScroll();
+        this.scenePainter.cutTo(src);
+        this.#candidate = src;
 
         // preload the rest, nearest first; if fonts reflow into a different scene,
         // the order is off by a little, which costs nothing but order
-        void this.imageLoader.preloadFrom(imgPath);
+        void this.imageLoader.preloadFrom(src);
 
         // setup events
         this.view.addEventListener('resize', () => {
@@ -62,7 +60,7 @@ class SceneDirector {
         if (this.doc.fonts && this.doc.fonts.ready) {
             this.doc.fonts.ready.then(() => {
                 this.sceneMap.measure();
-                const path = this.#currentScenePath();
+                const path = this.sceneMap.sceneForScroll();
                 if (path === this.#candidate) { return; }   // reflow didn't change the scene
                 clearTimeout(this.#settleTimer);
                 this.#candidate = path;
@@ -77,20 +75,16 @@ class SceneDirector {
      */
     #update() {
         this.#isFrameLoading = false;
-        const path = this.#currentScenePath();
-        if (path === this.#candidate) { return; }   // same scene: let the clock run
-        this.#candidate = path;
+        const src = this.sceneMap.sceneForScroll();
+        if (src === this.#candidate) { return; }   // same scene: let the clock run
+        this.#candidate = src;
         clearTimeout(this.#settleTimer);
-        this.#settleTimer = setTimeout(() => this.scenePainter.fadeTo(path), this.#settleMs);
+        this.#settleTimer = setTimeout(() => this.scenePainter.fadeTo(src), this.#settleMs);
     }
 
     #onScroll() {
         if(this.#isFrameLoading) return;
         this.#isFrameLoading = true;
         requestAnimationFrame(() => { this.#update(); })
-    }
-
-    #currentScenePath() {
-        return this.imagePaths[this.sceneMap.sceneForScroll()];
     }
 }

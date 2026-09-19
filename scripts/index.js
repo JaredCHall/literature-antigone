@@ -12,7 +12,6 @@ function initGalleryModeToggle() {
     }
 
     toggleBtn.addEventListener('click', toggleGallery);
-
     document.addEventListener('keydown', function(e) {
         if (e.key === 'g' || e.key === 'G') toggleGallery();
     });
@@ -21,20 +20,5 @@ function initGalleryModeToggle() {
 document.addEventListener('DOMContentLoaded', () => {
     initGalleryModeToggle();
 
-    const director = new SceneDirector(
-        document,
-        [
-            'images/antigone-ismene.webp',
-            'images/creon-decree.webp',
-            'images/comic-guard.webp',
-            'images/chorus.webp',
-            'images/antigone-creon.webp',
-            'images/creon-haemon.webp',
-            'images/antigone-tomb.webp',
-            'images/creon-teiresias.webp',
-            'images/messengers-report.webp',
-            'images/creon-collapse.webp',
-        ]
-    );
-    director.start()
+    new SceneDirector(document).start()
 });
