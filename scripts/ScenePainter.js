@@ -8,13 +8,16 @@ class ScenePainter {
 
     fadeDuration; // duration of crossfade in milliseconds
 
+    #loader; // ImageLoader
     #activeLayer; // scene div currently displayed (fades into)
     #inactiveLayer; // hidden div / previous scene (fades from)
+    
+    #current; // src of loaded image (set when fade starts)
+    #wanted; // most recently requested src — the only one allowed to paint
+
     #lastSwap = 0; // milliseconds, time of last completed swap
-    #current; // url of loading/loaded image (set when fade starts)
-    #pending; // url of image queued to paint next after current fade completes
     #timer;  // timer for next fade after current load
-    #loader;
+
 
     constructor(document, imageLoader) {
         this.#activeLayer =  document.getElementById('scene-a');
@@ -34,27 +37,29 @@ class ScenePainter {
         this.#activeLayer.replaceChildren(this.#loader.loadImage(src));
         this.#lastSwap = performance.now() - this.fadeDuration;
         this.#current = src;
+        this.#wanted = src;
     }
 
     // Schedules the next crossfade. If an image is already fading in,
     // it waits until the fade completes, before changing the scene.
     // Subsequent calls always replace the currently pending next scene.
     paintNext(src){
-        if(src === this.#current){ return this.#clearPending(); }
-        if(src === this.#pending){ return; }
+        if(src === this.#wanted){ return; }   // already painted, loading, or scheduled
+        this.#wanted = src;
+        this.#clearPending();                  // any queued fade is now stale
+        if(src === this.#current){ return; }   // scrolled back; stay put
 
-        const msUntilFree = this.#msUntilFree();
-        if(msUntilFree <= 0){
-            this.#crossfadeTo(src);
-            return;
-        }
+        this.#loader.whenReady(src).then((ok) => {
+            if(src !== this.#wanted){ return; } // superseded while loading
+            if(!ok){ console.warn(`Mural: failed to decode ${src}`); return; }
+            this.#schedule(src);
+        });
+    }
 
-        this.#pending = src;
-        clearTimeout(this.#timer);
-
-        this.#timer = setTimeout(()=>{
-            this.#crossfadeTo(src);
-        }, msUntilFree)
+    #schedule(src){
+        const ms = this.#msUntilFree();
+        if(ms <= 0){ return this.#crossfadeTo(src); }
+        this.#timer = setTimeout(() => this.#crossfadeTo(src), ms);
     }
 
     #crossfadeTo(src){
@@ -83,7 +88,6 @@ class ScenePainter {
     }
 
     #clearPending(){
-        this.#pending = null;
         clearTimeout(this.#timer);
         this.#timer = null;
     }
