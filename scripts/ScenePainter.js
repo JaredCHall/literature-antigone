@@ -60,13 +60,14 @@ class ScenePainter {
         if(src === this.#current){ return; }   // scrolled back; stay put
 
         this.#loader.whenReady(src).then((ok) => {
-            if(src !== this.#wanted){ return; } // superseded while loading
+            if (src !== this.#wanted || src === this.#current) { return; } // superseded while loading
             if(!ok){ console.warn(`Mural: failed to decode ${src}`); return; }
             this.#schedule(src);
         });
     }
 
     #schedule(src){
+        this.#clearPending();
         const ms = this.#msUntilFree();
         if(ms <= 0){ return this.#swapLayers(src); }
         this.#nextFadeTimer = setTimeout(() => this.#swapLayers(src), ms);
