@@ -8,7 +8,7 @@ class SceneDirector {
     imagePaths; // array of scene image paths
 
     imageLoader; // ImageLoader
-    sceneMap; // SchemeMap
+    sceneMap; // SceneMap
     scenePainter; // ScenePainter
 
     #isFrameLoading; // bool, true when scroll animation frame is loading
@@ -18,12 +18,12 @@ class SceneDirector {
         this.doc = document;
         this.view = this.doc.defaultView;
         this.imagePaths = imagePaths;
-        this.activationRatio = activationRatio;
+        this.#activationRatio = activationRatio;
     }
 
     start() {
         this.imageLoader = new ImageLoader(this.imagePaths);
-        this.sceneMap = new SceneMap(this.doc, this.imagePaths.length, this.activationRatio)
+        this.sceneMap = new SceneMap(this.doc, this.imagePaths.length, this.#activationRatio)
         this.scenePainter = new ScenePainter(this.doc, this.imageLoader);
 
 

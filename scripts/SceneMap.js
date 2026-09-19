@@ -1,7 +1,7 @@
 /**
  * Finds 'sceneN-start' anchors, tracks offsets, and determines correct scene for current viewport scroll position
  *
- * SceneDirector is expected to call .measureOffsets() and .sceneForScroll()
+ * SceneDirector is expected to call .measure() and .sceneForScroll()
  */
 class SceneMap {
 
