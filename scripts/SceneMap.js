@@ -55,7 +55,7 @@ class SceneMap {
 
     sceneForScroll(){
         if(this.offsets.length !== this.anchors.length){
-            throw Error('Anchors and offsets have different lengths. Must call .measureOffsets() before .sceneForScroll()');
+            throw Error('Anchors and offsets have different lengths. Must call .measure() before .sceneForScroll()');
         }
 
         const doc = this.doc.documentElement;
