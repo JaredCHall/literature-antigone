@@ -11,12 +11,12 @@ class ScenePainter {
     #loader; // ImageLoader
     #activeLayer; // scene div currently displayed (fades into)
     #inactiveLayer; // hidden div / previous scene (fades from)
-    
+
     #current; // src of loaded image (set when fade starts)
     #wanted; // most recently requested src — the only one allowed to paint
 
     #lastSwap = 0; // milliseconds, time of last completed swap
-    #timer;  // timer for next fade after current load
+    #nextFadeTimer;  // timer for next fade after current load
 
 
     constructor(document, imageLoader) {
@@ -59,7 +59,7 @@ class ScenePainter {
     #schedule(src){
         const ms = this.#msUntilFree();
         if(ms <= 0){ return this.#crossfadeTo(src); }
-        this.#timer = setTimeout(() => this.#crossfadeTo(src), ms);
+        this.#nextFadeTimer = setTimeout(() => this.#crossfadeTo(src), ms);
     }
 
     #crossfadeTo(src){
@@ -88,7 +88,7 @@ class ScenePainter {
     }
 
     #clearPending(){
-        clearTimeout(this.#timer);
-        this.#timer = null;
+        clearTimeout(this.#nextFadeTimer);
+        this.#nextFadeTimer = null;
     }
 }
