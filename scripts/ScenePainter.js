@@ -13,9 +13,10 @@
  * crossfading between them.
  *
  * fadeTo() crossfades once the image is decoded and any fade in progress
- * has finished; a fade is never interrupted.
+ * has finished; it never interrupts a fade.
  *
- * cutTo() paints a scene immediately, with no fade, and cancels anything pending.
+ * cutTo() paints a scene without a fade once its image is decoded, cancelling anything pending.
+ * If a fade is running, the new image takes the fading-in layer and the fade carries on.
  *
  * Requires both layers in the DOM, an opacity transition on them
  * (its duration sets the fade length), a .hidden class that sets
@@ -29,7 +30,7 @@ export class ScenePainter {
     #activeLayer;   // scene div currently displayed (fades into)
     #inactiveLayer; // hidden div / previous scene (fades from)
 
-    #current;       // src on screen (set when its fade starts)
+    #current;       // src on screen (set when its fade starts or its cut paints)
     #wanted;        // most recently requested src — the only one allowed to paint
 
     #lastSwapMs = 0;    // when the last crossfade began
@@ -57,13 +58,18 @@ export class ScenePainter {
         }
     }
 
-    /** Paints a scene immediately, with no fade. */
+    /** Paints a scene with no fade, once its image is decoded. */
     cutTo(src) {
         this.#clearPending();
-        this.#activeLayer.replaceChildren(this.#load(src).img);
-        this.#lastSwapMs = Math.max(this.#lastSwapMs, performance.now() - this.fadeDuration);
-        this.#current = src;
-        this.#wanted = src;
+        this.#wanted = src;                     // claim it now, so fadeTo() sees it
+        const { img, ready } = this.#load(src);
+        ready.then((ok) => {
+            if (src !== this.#wanted) { return; }   // superseded while loading
+            if (!ok) { console.warn(`Mural: failed to decode ${src}`); return; }
+            this.#activeLayer.replaceChildren(img);
+            this.#lastSwapMs = Math.max(this.#lastSwapMs, performance.now() - this.fadeDuration);
+            this.#current = src;
+        });
     }
 
     /**

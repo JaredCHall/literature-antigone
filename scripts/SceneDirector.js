@@ -32,9 +32,8 @@ export class SceneDirector {
     }
 
     /**
-     * Paints first scene and sets up event listeners for future scene loads.
-     * Preloads additional images in the background.
-     * Handles page reflow on webfonts load.
+     * Requests the first scene (painted once decoded) and sets up event listeners for future scene loads.
+     * Preloads additional images in the background. Handles page reflow on webfonts load.
      */
     start() {
         this.sceneMap = new SceneMap(this.doc, this.#activationRatio)
