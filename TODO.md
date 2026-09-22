@@ -4,8 +4,8 @@ Ranked by utility, most important first.
 
 ## 1. Mobile entry to gallery mode
 
-- [ ] Make `#gallery-toggle` visible on touch devices. It stays at `opacity: 0` until `body:hover`, and touch browsers handle hover inconsistently, so on phones it is effectively hidden.
-- [ ] Add a `@media (hover: none)` rule that keeps the button visible, possibly dimmed.
+- [x] Make `#gallery-toggle` visible on touch devices. It stays at `opacity: 0` until `body:hover`, and touch browsers handle hover inconsistently, so on phones it is effectively hidden.
+- [x] Add a `@media (hover: none)` rule that keeps the button visible, possibly dimmed.
 - [ ] Design the slideshow control (item 4) alongside it, so phones get both.
 
 ## 2. Scene IDs and visible scene markers
