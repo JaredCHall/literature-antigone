@@ -157,7 +157,7 @@ body.gallery-mode .content {
 .title-block {
     max-width: var(--measure);
     margin: 0 auto;
-    padding: 5rem 1.5rem 3rem;
+    padding: 5rem 1.5rem 0;
     text-align: center;
 }
 
@@ -188,13 +188,46 @@ body.gallery-mode .content {
     margin: 0 0 2.5rem;
 }
 
-.title-block::after {
+/* ---------- Scene markers ---------- */
+
+.scene-marker {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    margin: 3.5rem 0 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 1.8rem;
+    letter-spacing: 0.02em;
+    color: var(--antigone-gold);
+    text-align: center;
+    scroll-margin-top: 2rem;
+}
+
+.scene-marker::before,
+.scene-marker::after {
     content: "";
-    display: block;
-    width: 4rem;
-    height: 1px;
-    margin: 0 auto;
-    background: var(--rule);
+    flex: 1;
+    min-width: 1.5rem;
+    height: 2px;
+}
+
+.scene-marker::before {
+    background: linear-gradient(to right, transparent, rgba(201, 162, 75, 0.55));
+}
+
+.scene-marker::after {
+    background: linear-gradient(to left, transparent, rgba(201, 162, 75, 0.55));
+}
+
+/* The marker replaces the divider above it. */
+.quote:has(+ .scene-marker) {
+    border-bottom: none;
+}
+
+.scene-marker + .quote {
+    padding-top: 1.75rem;
 }
 
 /* ---------- Quotations ---------- */

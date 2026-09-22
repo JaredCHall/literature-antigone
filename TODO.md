@@ -10,10 +10,10 @@ Ranked by utility, most important first.
 
 ## 2. Scene IDs and visible scene markers
 
-- [ ] Give each `data-scene` blockquote an `id` (e.g. `#creon-decree`) so scenes can be linked without JavaScript.
-- [ ] Add `scroll-margin-top` so a linked anchor doesn't sit flush against the top of the viewport.
-- [ ] Add a visible marker where each scene begins.
-- [ ] Test a deep link on a cold load, including after the webfont reflow.
+- [x] Give each `data-scene` blockquote an `id` (e.g. `#creon-decree`) so scenes can be linked without JavaScript.
+- [x] Add `scroll-margin-top` so a linked anchor doesn't sit flush against the top of the viewport.
+- [x] Add a visible marker where each scene begins.
+- [x] Test a deep link on a cold load, including after the webfont reflow.
 
 Items 5 and 6 depend on this one.
 

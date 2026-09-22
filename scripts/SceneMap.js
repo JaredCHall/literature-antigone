@@ -28,7 +28,7 @@ export class SceneMap {
         }
 
         // final scene-data anchors
-        this.doc.querySelectorAll('.quotations .quote[data-scene]').forEach((el) => {
+        this.doc.querySelectorAll('.quotations .scene-marker[data-scene]').forEach((el) => {
             this.anchors.push(el);
             this.paths.push(el.dataset.scene);
         });

@@ -22,5 +22,5 @@ function initGalleryModeToggle() {
 document.addEventListener('DOMContentLoaded', () => {
     initGalleryModeToggle();
 
-    new SceneDirector(document).start()
+    new SceneDirector(document, 0.3).start()
 });
