@@ -40,17 +40,13 @@ export class SceneDirector {
         this.imageLoader = new ImageLoader(this.sceneMap.paths);
         this.scenePainter = new ScenePainter(this.doc, (src) => this.imageLoader.load(src));
 
-        // paint the first scene
+        // Paint the first scene
         this.sceneMap.measure();
         const src = this.sceneMap.sceneForScroll();
         this.scenePainter.cutTo(src);
         this.#candidate = src;
 
-        // preload the rest, nearest first; if fonts reflow into a different scene,
-        // the order is off by a little, which costs nothing but order
-        void this.imageLoader.preloadFrom(src);
-
-        // setup events
+        // Setup events
         this.view.addEventListener('resize', () => {
             this.sceneMap.measure();
             this.#onScroll();
@@ -58,16 +54,21 @@ export class SceneDirector {
         this.view.addEventListener('scroll', () => {
             this.#onScroll();
         })
-        // Webfonts land after first paint and shove every anchor down the page.
-        if (this.doc.fonts && this.doc.fonts.ready) {
+
+        // Handle page reflow on webfonts load and preload other images
+        const preload = () => void this.imageLoader.preloadFrom(this.#candidate);
+        if (this.doc.fonts?.ready) {
             this.doc.fonts.ready.then(() => {
+                // Webfonts land after first paint and shove every anchor down the page.
                 this.sceneMap.measure();
                 const path = this.sceneMap.sceneForScroll();
                 if (path === this.#candidate) { return; }   // reflow didn't change the scene
                 clearTimeout(this.#settleTimer);
                 this.#candidate = path;
                 this.scenePainter.cutTo(path);
-            });
+            }).finally(preload);
+        }else{
+            preload();
         }
     }
 
