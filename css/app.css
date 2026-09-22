@@ -112,6 +112,13 @@ body:hover #gallery-toggle {
     border-color: rgba(201, 162, 75, 0.55);
 }
 
+@media (hover: none) {
+    #gallery-toggle,
+    body:hover #gallery-toggle {
+        opacity: 1;
+    }
+}
+
 /* ---------- Content wrapper / gallery mode ---------- */
 
 .content {
