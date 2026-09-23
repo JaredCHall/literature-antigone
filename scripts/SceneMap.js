@@ -1,7 +1,7 @@
 /**
  * Maps scroll position to scene.
  *
- * Scene anchors are `.quote` elements inside `.quotations` carrying a
+ * Scene anchors are `.scene-marker` elements carrying a
  * `data-scene` attribute. No anchors at all, throws.
  */
 export class SceneMap {
@@ -28,7 +28,7 @@ export class SceneMap {
         }
 
         // final scene-data anchors
-        this.doc.querySelectorAll('.quotations .scene-marker[data-scene]').forEach((el) => {
+        this.doc.querySelectorAll('h2.scene-marker[data-scene]').forEach((el) => {
             this.anchors.push(el);
             this.paths.push(el.dataset.scene);
         });
