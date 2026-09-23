@@ -1,4 +1,3 @@
-
 import { ImageLoader } from './ImageLoader.js';
 import { SceneMap } from './SceneMap.js';
 import { ScenePainter } from './ScenePainter.js';
@@ -56,7 +55,7 @@ export class SceneDirector {
         })
 
         // Handle page reflow on webfonts load and preload other images
-        const preload = () => void this.imageLoader.preloadFrom(this.#candidate);
+        const preload = () => this.imageLoader.preloadFrom(this.#candidate);
         if (this.doc.fonts?.ready) {
             this.doc.fonts.ready.then(() => {
                 // Webfonts land after first paint and shove every anchor down the page.
@@ -82,7 +81,10 @@ export class SceneDirector {
         if (src === this.#candidate) { return; }   // same scene: let the clock run
         this.#candidate = src;
         clearTimeout(this.#settleTimer);
-        this.#settleTimer = setTimeout(() => this.scenePainter.fadeTo(src), this.#settleMs);
+        this.#settleTimer = setTimeout(() => {
+            this.scenePainter.fadeTo(src);
+            this.imageLoader.preloadFrom(src);  // re-center the queue on where the reader stopped
+        }, this.#settleMs);
     }
 
     #onScroll() {

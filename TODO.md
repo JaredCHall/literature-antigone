@@ -6,9 +6,9 @@ Ranked by utility, most important first.
 
 - [ ] Gallery Mode should act as a slideshow slowly rotating through every scene illustration until exit
 - [ ] Start each interval when a fade *begins*, not when it is requested, so a slow-decoding image doesn't get less screen time.
-- [ ] Decide what exiting does. Leaning toward scrolling the text to the scene the slideshow stopped on.
+- [ ] On exit scroll the text to the scene the slideshow stopped on.
 
 ## 2. Reprioritize preloading after large jumps or switch to gallery mode
 
-- [ ] When the reader jumps far, move the new scene's neighbors to the front of the preload queue.
+- [x] When the reader jumps far, move the new scene's neighbors to the front of the preload queue.
 - [ ] When in gallery mode, images are loaded always sequentially, preload in the appropriate order.
