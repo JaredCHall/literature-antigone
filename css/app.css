@@ -205,6 +205,16 @@ body.gallery-mode .content {
     scroll-margin-top: 2rem;
 }
 
+.scene-marker a {
+    color: inherit;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.scene-marker a:hover,
+.scene-marker a:focus-visible {
+    color: var(--ink);
+}
+
 .scene-marker::before,
 .scene-marker::after {
     content: "";
