@@ -114,6 +114,11 @@ body:hover #gallery-toggle {
     border-color: rgba(201, 162, 75, 0.55);
 }
 
+html:has(body.gallery-mode) {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+}
+
 /* ---------- Gallery toggle on touch devices ---------- */
 
 /* Portrait, reading: hidden and untappable. */
