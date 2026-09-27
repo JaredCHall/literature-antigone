@@ -1,6 +1,7 @@
 import { ImageLoader } from './ImageLoader.js';
 import { SceneMap } from './SceneMap.js';
 import { ScenePainter } from './ScenePainter.js';
+import {GalleryMode} from "./GalleryMode.js";
 /**
  * Displays the correct scene for user scroll position.
  *
@@ -11,10 +12,12 @@ export class SceneDirector {
     imageLoader;    // ImageLoader
     sceneMap;       // SceneMap
     scenePainter;   // ScenePainter
+    galleryMode;    // GalleryMode
 
     #isFrameLoading;    // bool, true when scroll animation frame is loading
     #activationRatio;   // ratio of screen height from top of viewport that anchor must reach to display scene
 
+    #isPaused = false;
     #settleMs;       // ms a scene must hold before it's painted
     #candidate;      // scene path currently waiting out the settle
     #settleTimer;
@@ -41,10 +44,12 @@ export class SceneDirector {
 
         // Setup events
         window.addEventListener('resize', () => {
+            if(this.#isPaused){ return }
             this.sceneMap.measure();
             this.#onScroll();
         })
         window.addEventListener('scroll', () => {
+            if(this.#isPaused){ return }
             this.#onScroll();
         })
 
@@ -63,6 +68,14 @@ export class SceneDirector {
         }else{
             preload();
         }
+
+        // Enable gallery mode
+        this.galleryMode = new GalleryMode(
+            this.scenePainter,
+            this.sceneMap.images,
+            () => this.#pause(),
+            () => this.#resume(),
+        );
     }
 
     /**
@@ -71,8 +84,9 @@ export class SceneDirector {
      */
     #update() {
         this.#isFrameLoading = false;
+        if (this.#isPaused) { return }
         const src = this.sceneMap.sceneForScroll();
-        if (src === this.#candidate) { return; }   // same scene: let the clock run
+        if (src === this.#candidate) { return }   // same scene: let the clock run
         this.#candidate = src;
         clearTimeout(this.#settleTimer);
         this.#settleTimer = setTimeout(() => {
@@ -85,5 +99,32 @@ export class SceneDirector {
         if(this.#isFrameLoading) return;
         this.#isFrameLoading = true;
         requestAnimationFrame(() => { this.#update(); })
+    }
+
+    /**
+     * Pauses director on enter to GalleryMode
+     * Returns ready promise for currently displayed image
+     */
+    #pause() {
+        this.#isPaused = true;
+        clearTimeout(this.#settleTimer);
+        const current = this.scenePainter.current;
+        if (current === undefined) {
+            // First scene still decoding: let it land, and wait on it.
+            return this.imageLoader.load(this.#candidate).ready;
+        }
+        this.imageLoader.preloadForwardFrom(current);
+        return this.scenePainter.fadeTo(current); // retargets #wanted, cancels pending, returns ready
+    }
+
+    /** Resumes director on exit from GalleryMode **/
+    #resume() {
+        const src = this.scenePainter.current ?? this.#candidate;
+        this.scenePainter.fadeTo(src);      // cancel any fade the slideshow left in flight
+        this.sceneMap.measure();            // resizes were skipped while paused
+        this.#candidate = src;              // so the scroll below doesn't fade us elsewhere
+        this.#isPaused = false;
+        this.sceneMap.anchors[this.sceneMap.paths.indexOf(src)]?.scrollIntoView();
+        this.imageLoader.preloadFrom(src);
     }
 }
