@@ -25,7 +25,6 @@ export class SceneMap {
         }
 
         // find scene-data anchors
-        this.paths = []
         document.querySelectorAll('h2.scene-marker[data-scene]').forEach((el) => {
             this.anchors.push(el);
             this.paths.push(el.dataset.scene);
