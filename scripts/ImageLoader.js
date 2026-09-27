@@ -38,7 +38,13 @@ export class ImageLoader {
             if (!this.paths.includes(src)) { throw new Error(`Image not registered with ImageLoader: ${src}`); }
             const img = new Image();
             img.src = src;
-            entry = { img, ready: img.decode().then(() => true, () => false) };
+            entry = {
+                img,
+                ready: img.decode().then(
+                    () => true,
+                    () => { this.loads.delete(src); return false; }   // failed: next load() starts fresh
+                ),
+            };
             this.loads.set(src, entry);
         }
         return entry;

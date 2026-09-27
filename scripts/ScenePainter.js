@@ -60,7 +60,7 @@ export class ScenePainter {
     /** Paints a scene with no fade, once its image is decoded. */
     cutTo(src) {
         this.#clearPending();
-        this.#wanted = src;                     // claim it now, so fadeTo() sees it
+        this.#wanted = src; // claim it now, so fadeTo() sees it
         const { img, ready } = this.#load(src);
         ready.then((ok) => {
             if (src !== this.#wanted) { return; }   // superseded while loading

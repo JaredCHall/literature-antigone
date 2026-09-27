@@ -2,4 +2,4 @@
 
 Ranked by utility, most important first.
 
-## 1. Add handling to allow ImageLoader to retry failed decodes
+## 1. Make all code beautiful and easily readable
