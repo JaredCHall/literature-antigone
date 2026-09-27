@@ -1,3 +1,5 @@
+import {SceneImages} from "./SceneImages.js";
+
 /**
  * Loads and caches scene images so each is fetched and decoded only once.
  *
@@ -20,9 +22,9 @@ export class ImageLoader {
     #pending = [];      // srcs waiting to preload, front first
     #running = false;   // true while #drain() is working through #pending
 
-    constructor(paths) {
-        this.paths = [...new Set(paths ?? [])]; // One entry per image, even if several passages share it.
-        if (!this.paths.length) { throw new Error('No images provided in paths array'); }
+    constructor(images) {
+        if(!(images instanceof SceneImages)){ throw new Error('images must be instance of SceneImages');}
+        this.paths = images.paths; // One entry per image, even if several passages share it.
     }
 
     /**

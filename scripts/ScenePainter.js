@@ -69,6 +69,7 @@ export class ScenePainter {
             this.#lastSwapMs = Math.max(this.#lastSwapMs, performance.now() - this.fadeDuration);
             this.#current = src;
         });
+        return ready;
     }
 
     /**
@@ -77,17 +78,24 @@ export class ScenePainter {
      * Each call replaces whatever scene was pending.
      */
     fadeTo(src) {
-        if (src === this.#wanted) { return; }   // already painted, loading, or scheduled
-        this.#wanted = src;
-        this.#clearPending();                   // any queued fade is now stale
-        if (src === this.#current) { return; }  // scrolled back; stay put
 
         const { img, ready } = this.#load(src);
+
+        if (src === this.#wanted) { return ready; }   // already painted, loading, or scheduled
+        this.#wanted = src;
+        this.#clearPending(); // any queued fade is now stale
+        if (src === this.#current) { return ready; }  // scrolled back; stay put
+
         ready.then((ok) => {
             if (src !== this.#wanted || src === this.#current) { return; } // superseded while loading
             if (!ok) { console.warn(`Mural: failed to decode ${src}`); return; }
             this.#schedule(src, img);
         });
+        return ready;
+    }
+
+    get current() {
+        return this.#current;
     }
 
     #schedule(src, img) {

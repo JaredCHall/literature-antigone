@@ -1,30 +1,40 @@
+import {ScenePainter} from "./ScenePainter.js";
+import {SceneImages} from "./SceneImages.js";
 
 export class GalleryMode {
-    #onEnter; // callback - fires when entering gallery mode and returns the img.ready promise of the current scene
+    #scenePainter; // ScenePainter
+    #paths;
+    #onEnter; // callback - fires when entering gallery mode
     #onExit; // callback - fires when exiting gallery mode
-    #paintNext; // callback - fires when next scene should be painted and returns the img.ready promise
 
     #toggleBtn; // element with #gallery-toggle
 
+    #index = -1;
     #sceneDisplayTime; // ms - length of time to display each scene
     #run = 0; // increments on each gallery enter / exit
     #displayTimer; // timer for next paint
 
     constructor(
+        scenePainter,
+        sceneImages,
         onEnter,
         onExit,
-        paintNext,
         sceneDisplayTime = 10000
     ) {
+
+        if(!(scenePainter instanceof ScenePainter)){ throw new Error('scenePainter must be instance of ScenePainter') }
+        if(!(sceneImages instanceof SceneImages)){ throw new Error('sceneImages must be instance of SceneImages') }
+
+        this.#scenePainter = scenePainter;
+        this.#paths = sceneImages.paths;
         this.#onEnter = onEnter;
         this.#onExit = onExit;
-        this.#paintNext = paintNext;
-        this.#toggleBtn = document.getElementById('gallery-toggle');
         this.#sceneDisplayTime = sceneDisplayTime;
 
-        if (typeof onEnter !== 'function') { throw new TypeError('GalleryMode needs an onEnter function.') }
-        if (typeof onExit !== 'function') { throw new TypeError('GalleryMode needs an onExit function.') }
-        if (typeof paintNext !== 'function') { throw new TypeError('GalleryMode needs a paintNext() function.') }
+        this.#toggleBtn = document.getElementById('gallery-toggle');
+
+        if (typeof onEnter !== 'function') { throw new TypeError('GalleryMode needs an onEnter() callback.') }
+        if (typeof onExit !== 'function') { throw new TypeError('GalleryMode needs an onExit() callback.') }
         if (!this.#toggleBtn){ throw new Error('element with #gallery-toggle not found') }
         if (!(Number.isFinite(sceneDisplayTime) && sceneDisplayTime > 0)) {
             throw new TypeError('GalleryMode sceneDisplayTime must be a positive number.');
@@ -45,11 +55,14 @@ export class GalleryMode {
         const isGallery = document.body.classList.toggle('gallery-mode');
 
         if(isGallery){
+            // Enter gallery mode
             this.#toggleBtn.innerHTML = '&#9729;';
             this.#toggleBtn.title = 'Show text (or press G)';
             this.#run++;
+            this.#index = this.#paths.indexOf(this.#scenePainter.current);
             void this.#setTimer(this.#onEnter());
         }else{
+            // Exit gallery Mode
             this.#toggleBtn.innerHTML = '&#9728;';
             this.#toggleBtn.title = 'Hide text (or press G)';
             clearTimeout(this.#displayTimer);
@@ -67,7 +80,9 @@ export class GalleryMode {
         }
 
         this.#displayTimer = setTimeout(() => {
-            this.#setTimer(this.#paintNext());
+            this.#index = (this.#index + 1) % this.#paths.length;
+            const ready = this.#scenePainter.fadeTo(this.#paths[this.#index]);
+            this.#setTimer(ready);
         }, this.#sceneDisplayTime);
     }
 }

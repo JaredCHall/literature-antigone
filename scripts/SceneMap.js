@@ -1,3 +1,5 @@
+import {SceneImages} from "./SceneImages.js";
+
 /**
  * Maps scroll position to scene.
  *
@@ -8,7 +10,8 @@ export class SceneMap {
 
     anchors = [];   // anchor elements in document order
     offsets = [];   // document-top offsets, parallel to anchors
-    paths = [];     // scene image paths
+    paths = [];     // scene image paths for each anchor
+    images; // SceneImages
 
     activationRatio = null;
 
@@ -21,7 +24,8 @@ export class SceneMap {
             throw new Error(`Invalid activation ratio: ${this.activationRatio}`);
         }
 
-        // final scene-data anchors
+        // find scene-data anchors
+        this.paths = []
         document.querySelectorAll('h2.scene-marker[data-scene]').forEach((el) => {
             this.anchors.push(el);
             this.paths.push(el.dataset.scene);
@@ -29,6 +33,8 @@ export class SceneMap {
         if(!this.anchors.length){
             throw new Error('No scene anchors found in document.');
         }
+        this.images = new SceneImages(this.paths);
+
     }
 
     /**
