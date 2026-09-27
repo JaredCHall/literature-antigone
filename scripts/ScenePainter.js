@@ -37,10 +37,9 @@ export class ScenePainter {
     #nextFadeTimer = null;  // pending swap, waiting for the current fade to finish
 
     /**
-     * @param {Document} document  holds the #scene-a and #scene-b layers
      * @param {LoadScene} load     source of decoded scene images
      */
-    constructor(document, load) {
+    constructor(load) {
         if (typeof load !== 'function') {
             throw new TypeError('ScenePainter needs a load(src) function.');
         }

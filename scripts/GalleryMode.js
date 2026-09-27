@@ -4,16 +4,13 @@ export class GalleryMode {
     #onExit; // callback - fires when exiting gallery mode
     #paintNext; // callback - fires when next scene should be painted and returns the img.ready promise
 
-    #body; // holds reference to document.body
     #toggleBtn; // element with #gallery-toggle
 
     #sceneDisplayTime; // ms - length of time to display each scene
-
     #run = 0; // increments on each gallery enter / exit
     #displayTimer; // timer for next paint
 
     constructor(
-        document,
         onEnter,
         onExit,
         paintNext,
@@ -22,7 +19,6 @@ export class GalleryMode {
         this.#onEnter = onEnter;
         this.#onExit = onExit;
         this.#paintNext = paintNext;
-        this.#body = document.body;
         this.#toggleBtn = document.getElementById('gallery-toggle');
         this.#sceneDisplayTime = sceneDisplayTime;
 
@@ -46,7 +42,7 @@ export class GalleryMode {
     }
 
     #toggleMode() {
-        const isGallery = this.#body.classList.toggle('gallery-mode');
+        const isGallery = document.body.classList.toggle('gallery-mode');
 
         if(isGallery){
             this.#toggleBtn.innerHTML = '&#9729;';

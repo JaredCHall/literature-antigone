@@ -8,9 +8,6 @@ import { ScenePainter } from './ScenePainter.js';
  * so fast scrolling doesn't crossfade through every scene it passes.
  */
 export class SceneDirector {
-    doc;        // document global
-    view;       // window global
-
     imageLoader;    // ImageLoader
     sceneMap;       // SceneMap
     scenePainter;   // ScenePainter
@@ -22,10 +19,7 @@ export class SceneDirector {
     #candidate;      // scene path currently waiting out the settle
     #settleTimer;
 
-    constructor(document, activationRatio = 0.35, settleMs= 500) {
-        this.doc = document;
-        this.view = this.doc.defaultView;
-
+    constructor(activationRatio = 0.35, settleMs= 500) {
         this.#activationRatio = activationRatio;
         this.#settleMs = settleMs;
     }
@@ -35,9 +29,9 @@ export class SceneDirector {
      * Preloads additional images in the background. Handles page reflow on webfonts load.
      */
     start() {
-        this.sceneMap = new SceneMap(this.doc, this.#activationRatio)
+        this.sceneMap = new SceneMap(this.#activationRatio)
         this.imageLoader = new ImageLoader(this.sceneMap.paths);
-        this.scenePainter = new ScenePainter(this.doc, (src) => this.imageLoader.load(src));
+        this.scenePainter = new ScenePainter((src) => this.imageLoader.load(src));
 
         // Paint the first scene
         this.sceneMap.measure();
@@ -46,18 +40,18 @@ export class SceneDirector {
         this.#candidate = src;
 
         // Setup events
-        this.view.addEventListener('resize', () => {
+        window.addEventListener('resize', () => {
             this.sceneMap.measure();
             this.#onScroll();
         })
-        this.view.addEventListener('scroll', () => {
+        window.addEventListener('scroll', () => {
             this.#onScroll();
         })
 
         // Handle page reflow on webfonts load and preload other images
         const preload = () => this.imageLoader.preloadFrom(this.#candidate);
-        if (this.doc.fonts?.ready) {
-            this.doc.fonts.ready.then(() => {
+        if (document.fonts?.ready) {
+            document.fonts.ready.then(() => {
                 // Webfonts land after first paint and shove every anchor down the page.
                 this.sceneMap.measure();
                 const path = this.sceneMap.sceneForScroll();

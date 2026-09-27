@@ -10,25 +10,19 @@ export class SceneMap {
     offsets = [];   // document-top offsets, parallel to anchors
     paths = [];     // scene image paths
 
-    doc = null;
-    view = null;
     activationRatio = null;
 
     constructor(
-        document, // document global
         activationRatio = 0.35 // ratio of screen height from top of viewport that anchor must reach to display scene
     ) {
-        this.doc = document;
-        this.view = this.doc.defaultView;
         this.activationRatio = activationRatio;
 
-        if(!this.view){ throw new Error('No scene view found at document.defaultView'); }
         if(!this.#validateActivationRatio(this.activationRatio)){
             throw new Error(`Invalid activation ratio: ${this.activationRatio}`);
         }
 
         // final scene-data anchors
-        this.doc.querySelectorAll('h2.scene-marker[data-scene]').forEach((el) => {
+        document.querySelectorAll('h2.scene-marker[data-scene]').forEach((el) => {
             this.anchors.push(el);
             this.paths.push(el.dataset.scene);
         });
@@ -47,7 +41,7 @@ export class SceneMap {
      */
     measure(){
         const tops = this.anchors.map((el) => el.getBoundingClientRect().top);
-        const scroll = this.view.scrollY;
+        const scroll = window.scrollY;
         this.offsets = tops.map((t) => t + scroll);
     }
 
@@ -64,11 +58,10 @@ export class SceneMap {
             throw Error('Anchors and offsets have different lengths. Must call .measure() before .sceneForScroll()');
         }
 
-        const doc = this.doc.documentElement;
-        const bottom = this.view.scrollY + this.view.innerHeight >= doc.scrollHeight - 2;
+        const bottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
         if (bottom) return this.paths[this.anchors.length - 1];
 
-        const line = this.view.scrollY + this.view.innerHeight * this.activationRatio;
+        const line = window.scrollY + window.innerHeight * this.activationRatio;
 
         // The last anchor that has crossed the line; above them all, the first scene.
         const index = Math.max(0, this.offsets.findLastIndex((top) => top <= line));

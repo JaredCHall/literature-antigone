@@ -14,7 +14,7 @@ function initGalleryModeToggle() {
     }
 
     toggleBtn.addEventListener('click', toggleGallery);
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'g' || e.key === 'G') toggleGallery();
     });
 }
@@ -22,5 +22,5 @@ function initGalleryModeToggle() {
 document.addEventListener('DOMContentLoaded', () => {
     initGalleryModeToggle();
 
-    new SceneDirector(document, 0.3).start()
+    new SceneDirector(0.3).start()
 });
