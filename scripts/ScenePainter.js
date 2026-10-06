@@ -23,7 +23,7 @@
  * opacity: 0, and a load function that supplies each scene's image.
  */
 export class ScenePainter {
-	fadeDuration; // duration of crossfade in milliseconds
+	#fadeDuration; // duration of crossfade in milliseconds
 
 	#load; // LoadScene
 	#activeLayer; // scene div currently displayed (fades into)
@@ -50,8 +50,8 @@ export class ScenePainter {
 		this.#inactiveLayer = document.getElementById('scene-b');
 		if (!this.#inactiveLayer) throw new Error('No element #scene-b found. Cannot paint scenes.');
 
-		this.fadeDuration = this.#fadeDuration(this.#activeLayer);
-		if (!this.fadeDuration) {
+		this.#fadeDuration = this.#readFadeDuration(this.#activeLayer);
+		if (!this.#fadeDuration) {
 			throw new Error(
 				'Expected scene layers to have transition duration > 0. (Ex. `transition: opacity 1.5s ease-in-out;`)',
 			);
@@ -70,7 +70,8 @@ export class ScenePainter {
 				return;
 			}
 			this.#activeLayer.replaceChildren(img);
-			this.#lastSwapMs = Math.max(this.#lastSwapMs, performance.now() - this.fadeDuration);
+			// backdate last swap so #msUntilFree returns zero
+			this.#lastSwapMs = Math.max(this.#lastSwapMs, performance.now() - this.#fadeDuration);
 			this.#current = src;
 		});
 		return ready;
@@ -127,10 +128,10 @@ export class ScenePainter {
 
 	#msUntilFree() {
 		const since = performance.now() - this.#lastSwapMs;
-		return Math.max(0, this.fadeDuration - since);
+		return Math.max(0, this.#fadeDuration - since);
 	}
 
-	#fadeDuration(el) {
+	#readFadeDuration(el) {
 		const raw = getComputedStyle(el).transitionDuration.split(',')[0].trim();
 		const ms = raw.endsWith('ms') ? parseFloat(raw) : parseFloat(raw) * 1000;
 		return Number.isFinite(ms) && ms > 0 ? ms : null;

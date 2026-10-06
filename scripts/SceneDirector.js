@@ -14,12 +14,12 @@ export class SceneDirector {
 	scenePainter; // ScenePainter
 	galleryMode; // GalleryMode
 
-	#isFrameLoading; // bool, true when scroll animation frame is loading
+	#isAnimationFramePending; // bool, true when scroll's requestAnimationFrame is pending
 	#activationRatio; // ratio of screen height from top of viewport that anchor must reach to display scene
 
 	#isPaused = false;
 	#settleMs; // ms a scene must hold before it's painted
-	#candidate; // scene path currently waiting out the settle
+	#candidate; // src of last selected scene or scene currently waiting out the settle
 	#settleTimer;
 
 	constructor(activationRatio = 0.35, settleMs = 500) {
@@ -59,11 +59,11 @@ export class SceneDirector {
 			document.fonts.ready.then(() => {
 				// Webfonts land after first paint and shove every anchor down the page.
 				this.sceneMap.measure();
-				const path = this.sceneMap.sceneForScroll();
-				if (path === this.#candidate) return; // reflow didn't change the scene
+				const src = this.sceneMap.sceneForScroll();
+				if (src === this.#candidate) return; // reflow didn't change the scene
 				clearTimeout(this.#settleTimer);
-				this.#candidate = path;
-				this.scenePainter.cutTo(path);
+				this.#candidate = src;
+				this.scenePainter.cutTo(src);
 			}).finally(preload);
 		} else {
 			preload();
@@ -83,7 +83,7 @@ export class SceneDirector {
 	 * have been reached for the same candidate scene.
 	 */
 	#update() {
-		this.#isFrameLoading = false;
+		this.#isAnimationFramePending = false;
 		if (this.#isPaused) return;
 		const src = this.sceneMap.sceneForScroll();
 		if (src === this.#candidate) return; // same scene: let the clock run
@@ -96,8 +96,8 @@ export class SceneDirector {
 	}
 
 	#onScroll() {
-		if (this.#isFrameLoading) return;
-		this.#isFrameLoading = true;
+		if (this.#isAnimationFramePending) return;
+		this.#isAnimationFramePending = true;
 		requestAnimationFrame(() => {
 			this.#update();
 		});

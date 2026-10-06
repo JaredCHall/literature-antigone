@@ -3,13 +3,13 @@ import { SceneImages } from './SceneImages.js';
 /**
  * Maps scroll position to scene.
  *
- * Scene anchors are `.scene-marker` elements carrying a
+ * Scene anchors are `h2.scene-marker` elements carrying a
  * `data-scene` attribute. No anchors at all, throws.
  */
 export class SceneMap {
 	anchors = []; // anchor elements in document order
 	offsets = []; // document-top offsets, parallel to anchors
-	paths = []; // scene image paths for each anchor
+	anchorPaths = []; // scene image paths for each anchor, may include duplicates
 	images; // SceneImages
 
 	activationRatio = null;
@@ -26,12 +26,12 @@ export class SceneMap {
 		// find scene-data anchors
 		document.querySelectorAll('h2.scene-marker[data-scene]').forEach((el) => {
 			this.anchors.push(el);
-			this.paths.push(el.dataset.scene);
+			this.anchorPaths.push(el.dataset.scene);
 		});
 		if (!this.anchors.length) {
 			throw new Error('No scene anchors found in document.');
 		}
-		this.images = new SceneImages(this.paths);
+		this.images = new SceneImages(this.anchorPaths);
 	}
 
 	/**
@@ -58,17 +58,17 @@ export class SceneMap {
 	 */
 	sceneForScroll() {
 		if (this.offsets.length !== this.anchors.length) {
-			throw Error('Anchors and offsets have different lengths. Must call .measure() before .sceneForScroll()');
+			throw new Error('Anchors and offsets have different lengths. Must call .measure() before .sceneForScroll()');
 		}
 
 		const bottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
-		if (bottom) return this.paths[this.anchors.length - 1];
+		if (bottom) return this.anchorPaths[this.anchors.length - 1];
 
 		const line = window.scrollY + window.innerHeight * this.activationRatio;
 
 		// The last anchor that has crossed the line; above them all, the first scene.
 		const index = Math.max(0, this.offsets.findLastIndex((top) => top <= line));
-		return this.paths[index];
+		return this.anchorPaths[index];
 	}
 
 	#validateActivationRatio(n) {
