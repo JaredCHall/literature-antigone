@@ -101,8 +101,18 @@ export class ScenePainter {
 		return ready;
 	}
 
-	get current() {
-		return this.#current;
+	/**
+	 * Drops any queued or still-loading scene and keeps the one on screen,
+	 * or, before the first paint, the one about to land. A crossfade
+	 * already under way finishes; its destination is what's kept.
+	 * @returns {{ src: string, ready: Promise<boolean> }}
+	 */
+	hold() {
+		const src = this.#current ?? this.#wanted;
+		if (src === undefined) throw new Error('Nothing to hold: no scene requested yet.');
+		this.#clearPending();
+		this.#wanted = src;
+		return { src, ready: this.#load(src).ready };
 	}
 
 	#schedule(src, img) {

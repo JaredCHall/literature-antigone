@@ -104,29 +104,25 @@ export class SceneDirector {
 	}
 
 	/**
-	 * Pauses director on enter to GalleryMode
-	 * Returns ready promise for currently displayed image
+	 * Pauses the director on entering GalleryMode.
+	 * Returns the held scene: its src, and a promise that resolves when it's decoded.
 	 */
 	#pause() {
 		this.#isPaused = true;
 		clearTimeout(this.#settleTimer);
-		const current = this.scenePainter.current;
-		if (current === undefined) {
-			// First scene still decoding: let it land, and wait on it.
-			return this.imageLoader.load(this.#candidate).ready;
-		}
-		this.imageLoader.preloadForwardFrom(current);
-		return this.scenePainter.fadeTo(current); // retargets #wanted, cancels pending, returns ready
+		const held = this.scenePainter.hold();
+		this.imageLoader.preloadForwardFrom(held.src);
+		return held;
 	}
 
-	/** Resumes director on exit from GalleryMode **/
+	/** Resumes the director on exit from GalleryMode. */
 	#resume() {
-		const src = this.scenePainter.current ?? this.#candidate;
-		this.scenePainter.fadeTo(src); // cancel any fade the slideshow left in flight
+		const { src } = this.scenePainter.hold(); // drop the slideshow's queued scene
 		this.sceneMap.measure(); // resizes were skipped while paused
-		this.#candidate = src; // so the scroll below doesn't fade us elsewhere
+		this.#candidate = src; // the scroll below starts from the held scene
 		this.#isPaused = false;
-		this.sceneMap.anchors[this.sceneMap.paths.indexOf(src)]?.scrollIntoView();
+		const i = this.sceneMap.anchorPaths.indexOf(src);
+		this.sceneMap.anchors[i]?.scrollIntoView();
 		this.imageLoader.preloadFrom(src);
 	}
 }

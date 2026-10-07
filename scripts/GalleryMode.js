@@ -60,8 +60,9 @@ export class GalleryMode {
 			this.#toggleBtn.innerHTML = '&#9729;';
 			this.#toggleBtn.title = 'Show text (or press G)';
 			this.#run++;
-			this.#index = this.#paths.indexOf(this.#scenePainter.current);
-			void this.#setTimer(this.#onEnter());
+			const { src, ready } = this.#onEnter();
+			this.#index = this.#paths.indexOf(src);
+			void this.#setTimer(ready);
 		} else {
 			// Exit gallery Mode
 			this.#toggleBtn.innerHTML = '&#9728;';
