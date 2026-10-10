@@ -1,4 +1,4 @@
-export class SceneImages {
+export class ScenePaths {
 	#paths; // one per image, document order — for loading and the slideshow
 
 	constructor(paths) {
@@ -6,7 +6,7 @@ export class SceneImages {
 		this.#paths = Object.freeze([...new Set(paths)]);
 	}
 
-	get paths() {
+	all() {
 		return this.#paths;
 	}
 }

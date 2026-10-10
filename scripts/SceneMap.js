@@ -1,4 +1,4 @@
-import { SceneImages } from './SceneImages.js';
+import { ScenePaths } from './ScenePaths.js';
 
 /**
  * Maps scroll position to scene.
@@ -31,7 +31,7 @@ export class SceneMap {
 		if (!this.anchors.length) {
 			throw new Error('No scene anchors found in document.');
 		}
-		this.images = new SceneImages(this.anchorPaths);
+		this.images = new ScenePaths(this.anchorPaths);
 	}
 
 	/**

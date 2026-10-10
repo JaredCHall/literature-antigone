@@ -1,5 +1,5 @@
 import { ScenePainter } from './ScenePainter.js';
-import { SceneImages } from './SceneImages.js';
+import { ScenePaths } from './ScenePaths.js';
 
 export class GalleryMode {
 	#scenePainter; // ScenePainter
@@ -16,16 +16,16 @@ export class GalleryMode {
 
 	constructor(
 		scenePainter,
-		sceneImages,
+		scenePaths,
 		onEnter,
 		onExit,
 		sceneDisplayTime = 10000,
 	) {
 		if (!(scenePainter instanceof ScenePainter)) throw new Error('scenePainter must be instance of ScenePainter');
-		if (!(sceneImages instanceof SceneImages)) throw new Error('sceneImages must be instance of SceneImages');
+		if (!(scenePaths instanceof ScenePaths)) throw new Error('sceneImages must be instance of SceneImages');
 
 		this.#scenePainter = scenePainter;
-		this.#paths = sceneImages.paths;
+		this.#paths = scenePaths.all();
 		this.#onEnter = onEnter;
 		this.#onExit = onExit;
 		this.#sceneDisplayTime = sceneDisplayTime;
