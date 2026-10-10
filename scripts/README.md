@@ -25,7 +25,7 @@ The script throws at startup if any required piece is missing.
 </body>
 ```
 
-- **Scene anchors** (required): `.scene-marker` elements with a `data-scene` image path. There must be at least one. Only `h2` elements count.
+- **Scene anchors** (required): `.scene-marker` elements with a `data-scene` image path. There must be at least one.
 - **Two layers** (required): `#scene-a` and `#scene-b`. Images are inserted into them as `<img>` children, which replace whatever the layer held. `#scene-a` is painted first, so `#scene-b` should start hidden.
 - **`#gallery-toggle`** (required, even if you don't advertise gallery mode). The script sets the button's content and title.
 - **`type="module"`** on the script tag, because the files use `import`.
