@@ -1,6 +1,31 @@
 import { ScenePainter } from './ScenePainter.js';
 import { ScenePaths } from './ScenePaths.js';
 
+/**
+ * Reports the scene on screen as gallery mode begins: its src, and a
+ * promise that resolves true once its image is decoded, false if it
+ * cannot be. The promise must not reject.
+ *
+ * @callback EnterGallery
+ * @returns {{ src: string, ready: Promise<boolean> }}
+ */
+
+/**
+ * Turns the mural into a slideshow that steps through each
+ * scene image once, in document order, wrapping at the end.
+ *
+ * Toggled by the #gallery-toggle button or the G key (key repeats and
+ * Ctrl, Meta or Alt combinations are ignored). Toggling flips the
+ * `gallery-mode` class on <body>; the stylesheet decides what it hides.
+ *
+ * On exit, the slideshow stops and onExit() is called. Anything further,
+ * such as returning the reader to their place, is the caller's job.
+ * A decode still pending from an earlier entry is ignored.
+ *
+ * Throws on a painter or paths of the wrong type, a missing
+ * #gallery-toggle, non-function callbacks, or a sceneDisplayTime that
+ * isn't a positive finite number.
+ */
 export class GalleryMode {
 	#scenePainter; // ScenePainter
 	#paths;
@@ -14,6 +39,13 @@ export class GalleryMode {
 	#run = 0; // increments on each gallery enter / exit
 	#displayTimer; // timer for next paint
 
+	/**
+	 * @param {ScenePainter} scenePainter
+	 * @param {ScenePaths} scenePaths
+	 * @param {EnterGallery} onEnter - called when slideshow starts
+	 * @param {function} onExit  - called when slideshow stops
+	 * @param {number} [sceneDisplayTime=10000] - ms each scene holds, timed from its decode
+	 */
 	constructor(
 		scenePainter,
 		scenePaths,
@@ -22,7 +54,7 @@ export class GalleryMode {
 		sceneDisplayTime = 10000,
 	) {
 		if (!(scenePainter instanceof ScenePainter)) throw new Error('scenePainter must be instance of ScenePainter');
-		if (!(scenePaths instanceof ScenePaths)) throw new Error('sceneImages must be instance of SceneImages');
+		if (!(scenePaths instanceof ScenePaths)) throw new Error('scenePaths must be instance of ScenePaths');
 
 		this.#scenePainter = scenePainter;
 		this.#paths = scenePaths.all();
@@ -62,7 +94,7 @@ export class GalleryMode {
 			this.#run++;
 			const { src, ready } = this.#onEnter();
 			this.#index = this.#paths.indexOf(src);
-			void this.#setTimer(ready);
+			void this.#setDisplayTimer(ready);
 		} else {
 			// Exit gallery Mode
 			this.#toggleBtn.innerHTML = '&#9728;';
@@ -73,7 +105,7 @@ export class GalleryMode {
 		}
 	}
 
-	async #setTimer(imgReady) {
+	async #setDisplayTimer(imgReady) {
 		const run = this.#run;
 		await imgReady;
 		if (run !== this.#run) {
@@ -84,7 +116,7 @@ export class GalleryMode {
 		this.#displayTimer = setTimeout(() => {
 			this.#index = (this.#index + 1) % this.#paths.length;
 			const ready = this.#scenePainter.fadeTo(this.#paths[this.#index]);
-			this.#setTimer(ready);
+			this.#setDisplayTimer(ready);
 		}, this.#sceneDisplayTime);
 	}
 }

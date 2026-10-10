@@ -1,3 +1,6 @@
+/**
+ * A collection of all unique scene image paths.
+ */
 export class ScenePaths {
 	#paths; // one per image, document order — for loading and the slideshow
 
