@@ -108,7 +108,7 @@ export class GalleryMode {
 		this.#displayTimer = setTimeout(() => {
 			this.#index = (this.#index + 1) % this.#paths.length;
 			const ready = this.#scenePainter.fadeTo(this.#paths[this.#index]);
-			this.#setDisplayTimer(ready);
+			void this.#setDisplayTimer(ready);
 		}, this.#sceneDisplayTime);
 	}
 }

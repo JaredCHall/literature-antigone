@@ -22,7 +22,7 @@ export class ImageLoader {
 	#running = false; // true while #drain() is working through #pending
 
 	constructor(scenePaths) {
-		if (!(scenePaths instanceof ScenePaths)) throw new Error('images must be instance of SceneImages');
+		if (!(scenePaths instanceof ScenePaths)) throw new Error('scenePaths must be instance of ScenePaths');
 		this.paths = scenePaths.all(); // One entry per image, even if several passages share it.
 	}
 

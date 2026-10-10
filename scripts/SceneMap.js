@@ -3,14 +3,14 @@ import { ScenePaths } from './ScenePaths.js';
 /**
  * Maps scroll position to scene.
  *
- * Scene anchors are `h2.scene-marker` elements carrying a
+ * Scene anchors are `.scene-marker` elements carrying a
  * `data-scene` attribute. No anchors at all, throws.
  */
 export class SceneMap {
 	anchors = []; // anchor elements in document order
 	offsets = []; // document-top offsets, parallel to anchors
 	anchorPaths = []; // scene image paths for each anchor, may include duplicates
-	images; // SceneImages
+	images; // ScenePaths
 
 	activationRatio = null;
 
@@ -24,7 +24,7 @@ export class SceneMap {
 		}
 
 		// find scene-data anchors
-		document.querySelectorAll('h2.scene-marker[data-scene]').forEach((el) => {
+		document.querySelectorAll('.scene-marker[data-scene]').forEach((el) => {
 			this.anchors.push(el);
 			this.anchorPaths.push(el.dataset.scene);
 		});
