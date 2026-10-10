@@ -17,14 +17,6 @@ import { ScenePaths } from './ScenePaths.js';
  * Toggled by the #gallery-toggle button or the G key (key repeats and
  * Ctrl, Meta or Alt combinations are ignored). Toggling flips the
  * `gallery-mode` class on <body>; the stylesheet decides what it hides.
- *
- * On exit, the slideshow stops and onExit() is called. Anything further,
- * such as returning the reader to their place, is the caller's job.
- * A decode still pending from an earlier entry is ignored.
- *
- * Throws on a painter or paths of the wrong type, a missing
- * #gallery-toggle, non-function callbacks, or a sceneDisplayTime that
- * isn't a positive finite number.
  */
 export class GalleryMode {
 	#scenePainter; // ScenePainter
